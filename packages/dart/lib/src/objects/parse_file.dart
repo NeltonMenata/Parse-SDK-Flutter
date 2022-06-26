@@ -8,6 +8,7 @@ class ParseFile extends ParseFileBase {
       {String? name,
       String? url,
       bool? debug,
+      this.restApiKey,
       ParseClient? client,
       bool? autoSendSessionId})
       : super(
@@ -19,6 +20,7 @@ class ParseFile extends ParseFileBase {
         );
 
   File? file;
+  Map<String, String>? restApiKey;
 
   Future<ParseFile> loadStorage() async {
     final File possibleFile = File('${ParseCoreData().fileDirectory}/$name');
@@ -72,6 +74,10 @@ class ParseFile extends ParseFileBase {
       HttpHeaders.contentTypeHeader:
           mime(file!.path) ?? 'application/octet-stream',
     };
+
+    // Linha adicionada para o ParseFile pegar a key da conexão de Api_REST
+    headers.addAll(restApiKey ?? {"": ""});
+
     try {
       final String uri = ParseCoreData().serverUrl + _path;
       final ParseNetworkResponse response = await _client.postBytes(
